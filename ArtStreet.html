@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtStreet — Art marketplace</title>
+<style>
+:root{--bg:#0d0d0f;--panel:#17171b;--panel2:#202027;--text:#f4f4f5;--muted:#a6a6b0;--accent:#c8ff3d;--pink:#ff4fd8;--blue:#63a9ff;--border:#303038}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0%,#2b1930 0,transparent 28%),var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+header{height:72px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 5%;gap:30px;position:sticky;top:0;background:rgba(13,13,15,.9);backdrop-filter:blur(12px);z-index:10}
+.logo{font-size:25px;font-weight:900;letter-spacing:-1px}.logo span{color:var(--accent)}
+nav{display:flex;gap:22px;color:var(--muted);font-size:14px}nav a{cursor:pointer}nav a:hover{color:#fff}
+.search{margin-left:auto;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 14px;width:220px;color:#fff;outline:none}
+.btn{border:0;border-radius:12px;padding:11px 17px;font-weight:800;cursor:pointer;background:var(--accent);color:#111}.btn.dark{background:var(--panel2);color:#fff;border:1px solid var(--border)}
+.hero{padding:75px 5% 45px;display:grid;grid-template-columns:1.25fr .75fr;gap:45px;align-items:center;max-width:1400px;margin:auto}
+.tag{display:inline-block;border:1px solid #3a3a43;border-radius:30px;padding:7px 12px;color:var(--accent);font-size:12px;font-weight:800}
+h1{font-size:clamp(48px,7vw,88px);line-height:.9;margin:18px 0;letter-spacing:-5px}
+.hero p{font-size:18px;line-height:1.6;color:var(--muted);max-width:600px}
+.hero-buttons{display:flex;gap:12px;margin-top:28px}
+.hero-art{height:360px;border-radius:28px;background:linear-gradient(135deg,#ff4fd8,#5f38ff 50%,#c8ff3d);padding:4px;transform:rotate(2deg)}
+.hero-art-inner{height:100%;border-radius:24px;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.hero-art-inner:before{content:"ART";font-size:125px;font-weight:1000;letter-spacing:-10px;color:transparent;-webkit-text-stroke:2px #fff;transform:rotate(-12deg)}
+.spray{position:absolute;width:180px;height:180px;border-radius:50%;background:#c8ff3d;filter:blur(35px);opacity:.5;top:25px;right:25px}
+section{padding:35px 5%;max-width:1400px;margin:auto}.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:20px}h2{font-size:30px;margin:0}.muted{color:var(--muted)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.filter{background:var(--panel);border:1px solid var(--border);padding:8px 13px;border-radius:999px;color:#bbb;cursor:pointer}.filter.active{background:#fff;color:#111}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:.2s}.card:hover{transform:translateY(-4px);border-color:#555}
+.art{height:220px;display:flex;align-items:center;justify-content:center;font-size:50px;font-weight:1000;position:relative;overflow:hidden}
+.art.a{background:linear-gradient(135deg,#ff7a18,#af002d 70%)}.art.b{background:linear-gradient(135deg,#00c6ff,#0072ff)}.art.c{background:linear-gradient(135deg,#c8ff3d,#20d58b)}.art.d{background:linear-gradient(135deg,#8e2de2,#ff4fd8)}
+.art:after{content:"";position:absolute;width:140%;height:35px;background:#fff;opacity:.18;transform:rotate(-25deg)}
+.card-body{padding:15px}.title{font-weight:800}.artist{color:var(--muted);font-size:13px;margin-top:5px}.price-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px}.price{font-weight:900;font-size:18px}.buy{background:#fff;border:0;padding:8px 12px;border-radius:9px;font-weight:800;cursor:pointer}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature{background:var(--panel);border:1px solid var(--border);padding:24px;border-radius:18px}.feature b{display:block;font-size:18px;margin:10px 0}.icon{font-size:28px}
+.upload{background:linear-gradient(100deg,#1b1b21,#24132a);border:1px solid #39313f;border-radius:25px;padding:32px;display:grid;grid-template-columns:1fr auto;gap:25px;align-items:center}
+.upload h2{margin-bottom:8px}.upload p{color:var(--muted)}
+footer{border-top:1px solid var(--border);margin-top:60px;padding:30px 5%;color:var(--muted);display:flex;justify-content:space-between}
+.modal{display:none;position:fixed;inset:0;background:#000b;z-index:30;align-items:center;justify-content:center;padding:20px}.modal.open{display:flex}.modalbox{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:28px;width:min(520px,100%)}.modalbox input,.modalbox textarea{width:100%;margin:8px 0 14px;background:#0e0e11;border:1px solid var(--border);border-radius:10px;padding:12px;color:#fff}.close{float:right;cursor:pointer;color:#aaa}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.features{grid-template-columns:1fr}.search{display:none}}
+@media(max-width:550px){nav{display:none}.grid{grid-template-columns:1fr}.hero{padding-top:45px}h1{letter-spacing:-3px}.upload{grid-template-columns:1fr}}
+
+/* ArtStreet Shorts + Studio */
+.shorts-wrap{display:grid;grid-template-columns:1fr 330px;gap:22px;align-items:start}
+.shorts-feed{height:650px;overflow-y:auto;scroll-snap-type:y mandatory;border:1px solid var(--border);border-radius:24px;background:#08080a}
+.short{height:650px;scroll-snap-align:start;position:relative;display:flex;align-items:flex-end;padding:28px;background:#111;overflow:hidden}
+.short-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:90px;font-weight:1000;letter-spacing:-6px}
+.short.s1 .short-bg{background:linear-gradient(140deg,#ff4fd8,#4b16ff,#0b0b10)}
+.short.s2 .short-bg{background:linear-gradient(140deg,#c8ff3d,#087f67,#07120e)}
+.short.s3 .short-bg{background:linear-gradient(140deg,#ff9d00,#8d1d1d,#17100b)}
+.short.s4 .short-bg{background:linear-gradient(140deg,#63a9ff,#2727b7,#080814)}
+.short-bg span{transform:rotate(-8deg);text-shadow:8px 8px 0 rgba(0,0,0,.25)}
+.short:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(0,0,0,.85))}
+.short-info{position:relative;z-index:2;max-width:78%}.short-info h3{font-size:25px;margin:7px 0}.short-info p{margin:0;color:#ddd}.short-user{font-weight:900;color:var(--accent)}
+.short-actions{position:absolute;right:18px;bottom:25px;z-index:3;display:flex;flex-direction:column;gap:10px}.round{width:46px;height:46px;border-radius:50%;border:1px solid #ffffff44;background:#151519dd;color:#fff;cursor:pointer;font-size:19px}
+.scroll-note{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:22px;position:sticky;top:95px}.scroll-note h3{margin-top:0}.stat{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}.stat:last-child{border:0}
+.studio{background:#111;border:1px solid var(--border);border-radius:24px;overflow:hidden}.studio-top{padding:15px;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:#17171b}.tool{background:#24242b;border:1px solid #3a3a43;color:#fff;border-radius:9px;padding:9px 12px;cursor:pointer}.tool.active{background:var(--accent);color:#111}.studio-main{display:grid;grid-template-columns:1fr 250px;min-height:570px}.canvas-area{background:#2b2b30;display:flex;align-items:center;justify-content:center;padding:20px}.canvas-wrap{width:min(100%,800px);aspect-ratio:4/3;background:white;box-shadow:0 10px 35px #0008}.canvas-wrap canvas{width:100%;height:100%;display:block;touch-action:none}.studio-side{border-left:1px solid var(--border);padding:18px;background:#17171b}.studio-side label{display:block;margin:14px 0 6px;color:#aaa;font-size:13px}.studio-side input[type=range]{width:100%}.color-row{display:flex;gap:8px;align-items:center}.color-row input{width:45px;height:35px;padding:0;border:0;background:none}.money-box{margin-top:15px;background:#101013;border:1px solid var(--border);border-radius:15px;padding:15px}.money-big{font-size:30px;font-weight:900;color:var(--accent)}.secure{font-size:12px;color:#999;line-height:1.5}
+@media(max-width:900px){.shorts-wrap{grid-template-columns:1fr}.scroll-note{position:static}.studio-main{grid-template-columns:1fr}.studio-side{border-left:0;border-top:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Art<span>Street</span></div>
+  <nav><a onclick="scrollToId('explore')">Explore</a><a onclick="scrollToId('shorts')">Shorts</a><a onclick="scrollToId('studio')">Studio</a><a onclick="scrollToId('artists')">Artists</a><a onclick="scrollToId('sell')">Sell art</a></nav>
+  <input class="search" id="search" placeholder="Search art..." oninput="filterCards()">
+  <button class="btn" onclick="openModal()">Create</button>
+</header>
+
+<main>
+<section class="hero">
+  <div>
+    <span class="tag">ART • STREET • COMMUNITY</span>
+    <h1>Art made by people.<br><span style="color:var(--accent)">Found by you.</span></h1>
+    <p>ArtStreet is a marketplace where artists can share their work, build a profile and sell their creations. Artists keep 90% — ArtStreet takes a 10% platform fee.</p>
+    <div class="hero-buttons"><button class="btn" onclick="scrollToId('explore')">Explore art</button><button class="btn dark" onclick="openModal()">Start creating</button></div>
+  </div>
+  <div class="hero-art"><div class="hero-art-inner"><div class="spray"></div></div></div>
+</section>
+
+<section id="explore">
+ <div class="section-head"><div><h2>Trending art</h2><div class="muted">Fresh pieces from the ArtStreet community</div></div><button class="btn dark" onclick="alert('More categories coming soon!')">View all</button></div>
+ <div class="filters"><button class="filter active" onclick="setFilter(this,'all')">All</button><button class="filter" onclick="setFilter(this,'Digital')">Digital</button><button class="filter" onclick="setFilter(this,'Fantasy')">Fantasy</button><button class="filter" onclick="setFilter(this,'Street')">Street</button><button class="filter" onclick="setFilter(this,'Print')">Print</button></div>
+ <div class="grid" id="cards">
+  <article class="card" data-cat="Digital" data-name="Neon Dreams"><div class="art a">NEON</div><div class="card-body"><div class="title">Neon Dreams</div><div class="artist">by NovaArt · Digital</div><div class="price-row"><span class="price">€8.00</span><button class="buy" onclick="buy('Neon Dreams',8)">Buy</button></div></div></article>
+  <article class="card" data-cat="Fantasy" data-name="Moon Forest"><div class="art b">✦</div><div class="card-body"><div class="title">Moon Forest</div><div class="artist">by Kairo · Fantasy</div><div class="price-row"><span class="price">€12.00</span><button class="buy" onclick="buy('Moon Forest',12)">Buy</button></div></div></article>
+  <article class="card" data-cat="Street" data-name="Green Noise"><div class="art c">NOISE</div><div class="card-body"><div class="title">Green Noise</div><div class="artist">by MxR · Street</div><div class="price-row"><span class="price">€5.50</span><button class="buy" onclick="buy('Green Noise',5.5)">Buy</button></div></div></article>
+  <article class="card" data-cat="Print" data-name="Broken Future"><div class="art d">FUTURE</div><div class="card-body"><div class="title">Broken Future</div><div class="artist">by Vex · Print</div><div class="price-row"><span class="price">€15.00</span><button class="buy" onclick="buy('Broken Future',15)">Buy</button></div></div></article>
+ </div>
+</section>
+
+
+<section id="shorts">
+ <div class="section-head"><div><h2>ArtStreet Shorts</h2><div class="muted">Scroll vertically through artwork from the community.</div></div></div>
+ <div class="shorts-wrap">
+  <div class="shorts-feed" id="shortsFeed">
+   <article class="short s1"><div class="short-bg"><span>NEON</span></div><div class="short-info"><div class="short-user">@novaart</div><h3>Neon Dreams</h3><p>Digital artwork · €8.00</p></div><div class="short-actions"><button class="round" onclick="like(this)">♡</button><button class="round" onclick="alert('Share link copied in demo!')">↗</button><button class="round" onclick="buy('Neon Dreams',8)">🛒</button></div></article>
+   <article class="short s2"><div class="short-bg"><span>MOON</span></div><div class="short-info"><div class="short-user">@kairo</div><h3>Moon Forest</h3><p>Fantasy illustration · €12.00</p></div><div class="short-actions"><button class="round" onclick="like(this)">♡</button><button class="round" onclick="alert('Share link copied in demo!')">↗</button><button class="round" onclick="buy('Moon Forest',12)">🛒</button></div></article>
+   <article class="short s3"><div class="short-bg"><span>STREET</span></div><div class="short-info"><div class="short-user">@mxr</div><h3>Street Heat</h3><p>Street art print · €9.50</p></div><div class="short-actions"><button class="round" onclick="like(this)">♡</button><button class="round" onclick="alert('Share link copied in demo!')">↗</button><button class="round" onclick="buy('Street Heat',9.5)">🛒</button></div></article>
+   <article class="short s4"><div class="short-bg"><span>BLUE</span></div><div class="short-info"><div class="short-user">@vex</div><h3>Future Signal</h3><p>Digital poster · €7.00</p></div><div class="short-actions"><button class="round" onclick="like(this)">♡</button><button class="round" onclick="alert('Share link copied in demo!')">↗</button><button class="round" onclick="buy('Future Signal',7)">🛒</button></div></article>
+  </div>
+  <aside class="scroll-note">
+   <h3>Keep scrolling ↓</h3>
+   <p class="muted">Just like Shorts: each piece fills the screen, with quick actions on the side.</p>
+   <div class="stat"><span>❤️ Likes</span><b>1.2K</b></div><div class="stat"><span>🎨 Artists</span><b>428</b></div><div class="stat"><span>🖼️ Works</span><b>3.8K</b></div>
+  </aside>
+ </div>
+</section>
+
+<section id="studio">
+ <div class="section-head"><div><h2>ArtStreet Studio</h2><div class="muted">Draw directly on ArtStreet, then publish your work.</div></div></div>
+ <div class="studio">
+  <div class="studio-top">
+   <button class="tool active" id="penBtn" onclick="setTool('pen')">✏️ Pen</button>
+   <button class="tool" id="eraserBtn" onclick="setTool('eraser')">◻ Eraser</button>
+   <button class="tool" onclick="clearCanvas()">🗑 Clear</button>
+   <button class="tool" onclick="saveDrawing()">💾 Save PNG</button>
+   <button class="btn" onclick="publishDrawing()">Publish to ArtStreet</button>
+  </div>
+  <div class="studio-main">
+   <div class="canvas-area"><div class="canvas-wrap"><canvas id="drawCanvas" width="800" height="600"></canvas></div></div>
+   <aside class="studio-side">
+    <b>Brush settings</b>
+    <label>Color</label><div class="color-row"><input id="brushColor" type="color" value="#111111"><span id="colorText">#111111</span></div>
+    <label>Brush size: <span id="sizeText">8</span> px</label><input id="brushSize" type="range" min="1" max="60" value="8">
+    <div class="money-box"><div class="muted">Your creator balance</div><div class="money-big">€0.00</div><div class="secure">Demo balance. Real payouts require a supported payment provider, identity/age requirements, and adult/legal setup where applicable.</div></div>
+   </aside>
+  </div>
+ </div>
+</section>
+<section id="artists">
+ <div class="section-head"><div><h2>Why ArtStreet?</h2><div class="muted">Built around creators, not just products.</div></div></div>
+ <div class="features">
+  <div class="feature"><div class="icon">🎨</div><b>Make & upload</b><span class="muted">Artists can create a profile and upload original artwork.</span></div>
+  <div class="feature"><div class="icon">🛒</div><b>Sell your work</b><span class="muted">Set your own price and sell digital art, prints or other allowed creations.</span></div>
+  <div class="feature"><div class="icon">⚡</div><b>90 / 10 model</b><span class="muted">The demo is designed around 90% going to the artist and 10% to ArtStreet.</span></div>
+ </div>
+</section>
+
+<section id="sell">
+ <div class="upload">
+  <div><h2>Got art? Put it on the Street.</h2><p>Create an artist listing, add your artwork and choose a price.</p></div>
+  <button class="btn" onclick="openModal()">Upload artwork</button>
+ </div>
+</section>
+</main>
+
+<footer><span>© 2026 ArtStreet</span><span>Made for artists • 90% creator / 10% platform</span></footer>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+ <div class="modalbox">
+  <span class="close" onclick="closeModal()">✕</span>
+  <h2>Create artwork</h2><p class="muted">Demo upload form — connect storage and payments to make this production-ready.</p>
+  <label>Artwork title</label><input id="artTitle" placeholder="e.g. Midnight City">
+  <label>Price (€)</label><input id="artPrice" type="number" min="1" step=".50" placeholder="10">
+  <label>Description</label><textarea id="artDesc" rows="4" placeholder="Tell people about your artwork..."></textarea>
+  <button class="btn" onclick="publish()">Publish demo listing</button>
+ </div>
+</div>
+
+<script>
+let activeFilter='all';
+function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+function openModal(){document.getElementById('modal').classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function publish(){
+ const t=document.getElementById('artTitle').value||'Untitled artwork';
+ const p=parseFloat(document.getElementById('artPrice').value)||10;
+ const card=document.createElement('article'); card.className='card'; card.dataset.cat='Digital'; card.dataset.name=t;
+ card.innerHTML=`<div class="art a">NEW</div><div class="card-body"><div class="title">${escapeHtml(t)}</div><div class="artist">by You · Digital</div><div class="price-row"><span class="price">€${p.toFixed(2)}</span><button class="buy" onclick="buy('${escapeHtml(t).replace(/'/g,"\\'")}',${p})">Buy</button></div></div>`;
+ document.getElementById('cards').prepend(card); closeModal(); scrollToId('explore'); alert('Your demo artwork is now listed!');
+}
+function buy(name,price){
+ const fee=price*.10, artist=price-fee;
+ alert(`Demo checkout\\n\\n${name}\\nPrice: €${price.toFixed(2)}\\n\\nArtist receives: €${artist.toFixed(2)}\\nArtStreet fee (10%): €${fee.toFixed(2)}\\n\\nNo real payment was made.`);
+}
+function setFilter(btn,cat){document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));btn.classList.add('active');activeFilter=cat;filterCards()}
+function filterCards(){
+ const q=document.getElementById('search').value.toLowerCase();
+ document.querySelectorAll('#cards .card').forEach(c=>{
+  const ok=(activeFilter==='all'||c.dataset.cat===activeFilter)&&(c.dataset.name.toLowerCase().includes(q));
+  c.style.display=ok?'block':'none';
+ })
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+</script>
+</body>
+</html>
